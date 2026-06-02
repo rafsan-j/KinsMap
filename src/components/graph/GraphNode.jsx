@@ -38,25 +38,25 @@ function GraphNode({ data }) {
           handleClick()
         }
       }}
-      className={`relative flex w-[112px] flex-col items-center gap-1.5 border-2 bg-white p-2 shadow-md transition-shadow hover:shadow-lg ${
+      className={`relative flex w-28 flex-col items-center gap-1.5 border-2 bg-white p-2 shadow-md transition-shadow hover:shadow-lg ${
         isMale ? 'rounded-sm' : isFemale ? 'rounded-2xl' : 'rounded-lg'
       } ${isFocus ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200'} ${
         isDeceased ? 'opacity-60' : ''
       }`}
     >
-      <Handle type="target" position={Position.Top} className="!bg-gray-400 !w-2 !h-2" />
-      <Handle type="source" position={Position.Bottom} className="!bg-gray-400 !w-2 !h-2" />
+      <Handle type="target" position={Position.Top} className="bg-gray-400! w-2! h-2!" />
+      <Handle type="source" position={Position.Bottom} className="bg-gray-400! w-2! h-2!" />
       <Handle
         type="target"
         position={Position.Left}
         id="spouse-target"
-        className="!bg-pink-400 !w-2 !h-2"
+        className="bg-pink-400! w-2! h-2!"
       />
       <Handle
         type="source"
         position={Position.Right}
         id="spouse-source"
-        className="!bg-pink-400 !w-2 !h-2"
+        className="bg-pink-400! w-2! h-2!"
       />
 
       {isDeceased && (

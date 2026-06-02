@@ -3,18 +3,41 @@ import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../store/authStore'
 import { fetchTreeMembership } from '../lib/auth'
 
+function fetchMembershipWithTimeout(userId, timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('Membership lookup timed out'))
+    }, timeoutMs)
+
+    fetchTreeMembership(userId)
+      .then((result) => {
+        clearTimeout(timer)
+        resolve(result)
+      })
+      .catch((error) => {
+        clearTimeout(timer)
+        reject(error)
+      })
+  })
+}
+
 async function syncAuthSession(session) {
-  const { setAuthState, clearAuth, setLoading } = useAuthStore.getState()
+  const { setAuthState, clearAuth, setLoading, user, role, linkedPersonId, treeId, isLoading } =
+    useAuthStore.getState()
 
   if (!session?.user) {
     clearAuth()
     return
   }
 
-  setLoading(true)
+  const isSameUser = user?.id === session.user.id
+
+  if (isLoading && !isSameUser) {
+    setLoading(true)
+  }
 
   try {
-    const membership = await fetchTreeMembership(session.user.id)
+    const membership = await fetchMembershipWithTimeout(session.user.id)
 
     setAuthState({
       user: session.user,
@@ -26,9 +49,9 @@ async function syncAuthSession(session) {
   } catch {
     setAuthState({
       user: session.user,
-      role: null,
-      linkedPersonId: null,
-      treeId: null,
+      role: isSameUser ? role : null,
+      linkedPersonId: isSameUser ? linkedPersonId : null,
+      treeId: isSameUser ? treeId : null,
       isLoading: false,
     })
   }

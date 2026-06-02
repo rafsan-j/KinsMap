@@ -196,7 +196,7 @@ function FamilyGraphInner({
 
   if (loading || unionsLoading) {
     return (
-      <div className="flex h-full min-h-[480px] items-center justify-center bg-gray-50">
+      <div className="flex h-full items-center justify-center bg-gray-50" style={{ minHeight: 480 }}>
         <Spinner />
       </div>
     )
@@ -204,7 +204,7 @@ function FamilyGraphInner({
 
   if (error) {
     return (
-      <div className="flex h-full min-h-[480px] items-center justify-center bg-gray-50 p-6 text-sm text-red-600">
+      <div className="flex h-full items-center justify-center bg-gray-50 p-6 text-sm text-red-600" style={{ minHeight: 480 }}>
         {error}
       </div>
     )
@@ -212,14 +212,14 @@ function FamilyGraphInner({
 
   if (!persons[focusPersonId]) {
     return (
-      <div className="flex h-full min-h-[480px] items-center justify-center bg-gray-50 p-6 text-sm text-gray-600">
+      <div className="flex h-full items-center justify-center bg-gray-50 p-6 text-sm text-gray-600" style={{ minHeight: 480 }}>
         Focus person not found.
       </div>
     )
   }
 
   return (
-    <div className="relative h-full min-h-[480px] w-full bg-gray-50">
+    <div className="relative h-full w-full bg-gray-50" style={{ minHeight: 480 }}>
       <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
         <Button
           variant="secondary"
@@ -263,7 +263,7 @@ function FamilyGraphInner({
         fitView
       >
         <Background gap={20} size={1} color="#e5e7eb" />
-        <Controls showInteractive={false} className="!shadow-md" />
+        <Controls showInteractive={false} />
         <FitViewOnChange focusPersonId={focusPersonId} nodeCount={nodes.length} />
       </ReactFlow>
     </div>

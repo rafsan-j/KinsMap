@@ -5,13 +5,14 @@ import { usePersons } from '../hooks/usePersons'
 import FamilyGraph from '../components/graph/FamilyGraph'
 import PersonForm from '../components/person/PersonForm'
 import PersonPanel from '../components/person/PersonPanel'
+import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
 
 export default function TreePage() {
   const { focusPersonId: routeFocusId } = useParams()
   const navigate = useNavigate()
   const { treeId, linkedPersonId, userRole, isLoading } = useAuth()
-  const { fetchPersons, getPersonById } = usePersons()
+  const { persons, loading: personsLoading, fetchPersons, getPersonById } = usePersons()
 
   const focusPersonId = routeFocusId || linkedPersonId
   const [depthLevel, setDepthLevel] = useState(2)
@@ -88,6 +89,16 @@ export default function TreePage() {
     [currentPanelPerson],
   )
 
+  const openStandalonePersonForm = useCallback(() => {
+    setPersonFormState({
+      mode: 'add',
+      heading: 'Add person',
+      description:
+        'Create a standalone person now, then connect them to parents, siblings, or a spouse later.',
+      submitLabel: 'Add Person',
+    })
+  }, [])
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -96,7 +107,7 @@ export default function TreePage() {
     )
   }
 
-  if (!treeId || !focusPersonId) {
+  if (!treeId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
@@ -115,11 +126,47 @@ export default function TreePage() {
     )
   }
 
+  if (!personsLoading && Object.keys(persons).length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-gray-900">Your tree is empty</h1>
+            <p className="mt-3 text-sm text-gray-600">
+              Start with a standalone person, then connect parents, siblings, or a spouse later.
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button type="button" onClick={openStandalonePersonForm}>
+              Add person
+            </Button>
+            <Link
+              to="/invite/link-profile"
+              className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Link profile
+            </Link>
+          </div>
+
+          <p className="mt-4 text-center text-xs text-gray-500">
+            You can connect this person to relatives after saving.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
-        Click a person node to open profile actions. Use Edit Profile for notes and details,
-        or Add Child, Add Father, Add Mother, and Add Sibling to create new nodes.
+      <div className="flex flex-col gap-3 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900 sm:flex-row sm:items-center sm:justify-between">
+        <p>
+          Click a person node to open profile actions. Use Add Person to create someone without
+          choosing a relation first, or use the relation actions to connect new relatives.
+        </p>
+        <Button type="button" size="sm" onClick={openStandalonePersonForm}>
+          Add person
+        </Button>
       </div>
       <div className="-mx-4 -mt-4 h-[calc(100vh-8rem)] sm:-mx-6 sm:-mt-6 md:h-[calc(100vh-5.5rem)]">
         <FamilyGraph
